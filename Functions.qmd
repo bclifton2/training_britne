@@ -14,13 +14,13 @@ celsius4 <- (airtemps[4] - 32 ) * 5/9
 ```
 
 ```{r}
-#` Convert temp from F to C
-#`
-#` @param fahr Temp in degrees F to be converted
-#` @return Temp in C
-#` @export
-#` @examples
-#` f_to_c(32)
+#' Convert temp from F to C
+#'
+#' @param fahr Temp in degrees F to be converted
+#' @return Temp in C
+#' @export
+#' @examples
+#' f_to_c(32)
 
 f_to_c <- function(fahr) {
   celsius <- (fahr-32)*5/9
