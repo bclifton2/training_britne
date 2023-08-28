@@ -5,6 +5,8 @@ editor: visual
 ---
 
 - Introduction to Quarto
+ Files and such can be linked to things 
+- [Introduction to Quarto](file to link to)
 - Cleaning & Wrangling Data
 - Data Visualization
 - Spacial Data in R
