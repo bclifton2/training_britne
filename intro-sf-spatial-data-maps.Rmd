@@ -129,4 +129,157 @@ write_sf(pop_region_3338, "data/ak_regions_population.shp")
 ```
 
 
+```{r}
+rivers_3338 <- read_sf("data/ak_rivers_simp.shp")
+st_crs(rivers_3338)
+```
+
+
+```{r}
+ggplot() +
+    geom_sf(data = pop_region_3338, aes(fill = total_pop)) +
+    geom_sf(data = pop_3338, size = 0.5) +
+    geom_sf(data = rivers_3338,
+            aes(linewidth = StrOrder)) +
+    scale_linewidth(range = c(0.05, 0.5), guide = "none") +
+    labs(title = "Total Population by Alaska Region",
+         fill = "Total Population") +
+    scale_fill_continuous(low = "khaki",
+                          high =  "firebrick",
+                          labels = comma) +
+    theme_bw() 
+```
+
+```{r}
+pop_3857 <- pop_3338 %>%
+    st_transform(crs = 3857)
+```
+
+```{r}
+# Define a function to fix the bbox to be in EPSG:3857
+# See https://github.com/dkahle/ggmap/issues/160#issuecomment-397055208
+ggmap_bbox_to_3857 <- function(map) {
+    if (!inherits(map, "ggmap"))
+        stop("map must be a ggmap object")
+    # Extract the bounding box (in lat/lon) from the ggmap to a numeric vector,
+    # and set the names to what sf::st_bbox expects:
+    map_bbox <- setNames(unlist(attr(map, "bb")),
+                         c("ymin", "xmin", "ymax", "xmax"))
+    
+    # Coonvert the bbox to an sf polygon, transform it to 3857,
+    # and convert back to a bbox (convoluted, but it works)
+    bbox_3857 <-
+        st_bbox(st_transform(st_as_sfc(st_bbox(map_bbox, crs = 4326)), 3857))
+    
+    # Overwrite the bbox of the ggmap object with the transformed coordinates
+    attr(map, "bb")$ll.lat <- bbox_3857["ymin"]
+    attr(map, "bb")$ll.lon <- bbox_3857["xmin"]
+    attr(map, "bb")$ur.lat <- bbox_3857["ymax"]
+    attr(map, "bb")$ur.lon <- bbox_3857["xmax"]
+    map
+}
+```
+
+
+```{r}
+bbox <- c(-170, 52,-130, 64) # this is roughly southern Alaska
+ak_map <- get_stamenmap(bbox, zoom = 4) # get base map
+ak_map_3857 <- ggmap_bbox_to_3857(ak_map) # fix the bbox to be in EPSG:3857
+```
+
+```{r}
+ggmap(ak_map_3857) +
+    geom_sf(data = pop_3857,
+            aes(color = population),
+            inherit.aes = F) +
+    scale_color_continuous(low = "khaki",
+                           high =  "firebrick",
+                           labels = comma)
+```
+
+# Skip ahead to 10.7
+```{r}
+epsg3338 <- leaflet::leafletCRS(
+    crsClass = "L.Proj.CRS",
+    code = "EPSG:3338",
+    proj4def =  "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs", # all the information (parameters) that make up the previous projection
+    resolutions = 2 ^ (16:7)
+)
+```
+
+```{r}
+st_crs(pop_region_3338)
+```
+
+
+```{r}
+pop_region_4326 <- pop_region_3338 %>% st_transform(crs = 4326)
+```
+
+```{r}
+m <- leaflet(options = leafletOptions(crs = epsg3338)) %>%
+    addPolygons(data = pop_region_4326,
+                fillColor = "gray",
+                weight = 1)
+```
+
+
+```{r}
+pal <- colorNumeric(palette = "Reds", domain = pop_region_4326$total_pop)
+
+m <- leaflet(options = leafletOptions(crs = epsg3338)) %>%
+    addPolygons(
+        data = pop_region_4326,
+        fillColor = ~ pal(total_pop),
+        weight = 1,
+        color = "black",
+        fillOpacity = 1,
+        label = ~ region
+    ) %>%
+    addLegend(
+        position = "bottomleft",
+        pal = pal,
+        values = range(pop_region_4326$total_pop),
+        title = "Total Population"
+    )
+
+m
+```
+
+
+```{r}
+pal <- colorNumeric(palette = "Reds", domain = pop_region_4326$total_pop)
+
+m <- leaflet(options = leafletOptions(crs = epsg3338)) %>%
+    addPolygons(
+        data = pop_region_4326,
+        fillColor = ~ pal(total_pop),
+        weight = 1,
+        color = "black",
+        fillOpacity = 1
+    ) %>%
+    addCircleMarkers(
+        data = pop_4326,
+        lat = ~ lat,
+        lng = ~ lng,
+        radius = ~ log(population / 500),
+        # arbitrary scaling
+        fillColor = "gray",
+        fillOpacity = 1,
+        weight = 0.25,
+        color = "black",
+        label = ~ paste0(pop_4326$city, ", population ", comma(pop_4326$population))
+    ) %>%
+    addLegend(
+        position = "bottomleft",
+        pal = pal,
+        values = range(pop_region_4326$total_pop),
+        title = "Total Population"
+    )
+
+m
+```
+
+
+
 
