@@ -1,0 +1,17 @@
+---
+title: "Intro to sf package for Spatial Data and Making Maps"
+author: "Britne Clifton"
+date: "2023-08-30"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(sf)
+library(ggplot2)
+library(leaflet)
+library(scales)
+library(ggmap)
+library(dplyr)
+```
+
