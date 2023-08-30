@@ -1,5 +1,5 @@
 ---
-title: "R Workshop"
+title: "R Workshop Github Pages Example"
 format: html
 editor: visual
 ---
