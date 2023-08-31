@@ -1,0 +1,16 @@
+---
+title: "Text Analysis Exercise - NCEAS Delta"
+author: "B Clifton"
+format: html
+editor: visual
+---
+
+```{r}
+library(qualtRics)
+library(tidyr)
+library(knitr)
+library(ggplot2)
+library(kableExtra)
+library(dplyr)
+```
+
