@@ -1,0 +1,27 @@
+---
+title: "CensusDataWork"
+author: "Britne Clifton"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidycensus)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+census_api_key("84d61cff521dd1c4291817d95c44a95e3b4147da", install = TRUE)
+```
+
+
+
+
+
+
+
+
+
+
