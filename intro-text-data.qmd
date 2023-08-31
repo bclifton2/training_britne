@@ -75,6 +75,68 @@ ggplot(data = count_JekHyde, aes(x=reorder(word, n), y=n)) +
 ```
 
 
+## 12.5
+```{r}
+library(tidytext) # tidy text tools
+library(quanteda) # create a corpus
+library(pdftools) # read in data
+library(dplyr) # wrangle data
+library(stringr) # string manipulation
+library(ggplot2) # plots
+library(wordcloud)
+```
+
+```{r}
+path_df <- "data/DeltaCouncil_2013-ch-05.pdf"
+dp_ch5 <- pdftools::pdf_text(path_df)
+```
+
+```{r}
+corpus_dp_ch5 <- quanteda::corpus(dp_ch5)
+
+tidy_dp_ch5 <- tidytext::tidy(corpus_dp_ch5)
+```
+
+
+
+```{r}
+### Question 1
+#tokenize the data (make words into a token)
+unnest_dp_ch5 <- tidy_dp_ch5 %>% 
+    unnest_tokens(output = word,
+                  input = text) 
+
+### Question 2
+# get rid of unecessaries ("the", "a", "that")
+words_dp_ch5 <- unnest_dp_ch5 %>% 
+    dplyr::anti_join(stop_words)
+```
+
+
+```{r}
+### Question 3
+# what are the top 10 most frequently used words
+count_dp_ch5 <- words_dp_ch5 %>%
+    count(word) %>%
+    slice_max(n = 10, order_by = n)
+```
+
+```{r}
+### Question 4
+# visualize it!
+
+library(RColorBrewer)
+#coul <- brewer.pal(10, "Set2") 
+
+# bar plot
+ggplot(count_dp_ch5, aes(x = reorder(word, n), y = n, fill = word)) +
+    geom_col() +
+    coord_flip() +
+    labs(title = "Top 10 Most Frequently Occurring Words in Chapter 5 of the Delta Plan",
+         x = NULL,
+         y = "count") +
+    theme_minimal()
+```
 
 
 
