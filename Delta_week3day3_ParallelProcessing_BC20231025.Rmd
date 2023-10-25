@@ -1,0 +1,94 @@
+---
+title: "ParallelPenguins"
+author: "Britne Clifton"
+date: "2023-10-25"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(palmerpenguins)
+library(dplyr)
+library(tidyr)
+```
+
+
+```{r}
+penguins <- palmerpenguins::penguins
+
+bill_length <- penguins %>% 
+    select(species, bill_length_mm) %>% 
+    drop_na() %>% 
+    as.data.frame()
+head(bill_length)
+```
+
+```{r}
+trials <- 10
+res <- data.frame()
+system.time({
+  trial <- 1
+  while(trial <= trials) {
+    index <- sample(100, 100, replace=TRUE)
+    result1 <- glm(bill_length[index,1]~bill_length[index,2], family=binomial(logit))
+    r <- coefficients(result1)
+    res <- rbind(res, r)
+    trial <- trial + 1
+  }
+})
+```
+
+
+
+```{r}
+trials <- 3000
+res <- data.frame()
+system.time({
+  trial <- 1
+  while(trial <= trials) {
+    index <- sample(100, 100, replace=TRUE)
+    result1 <- glm(bill_length[index,1]~bill_length[index,2], family=binomial(logit))
+    r <- coefficients(result1)
+    res <- rbind(res, r)
+    trial <- trial + 1
+  }
+})
+```
+
+```{r}
+boot_fx <- function(trial) {
+  index <- sample(100, 100, replace=TRUE)
+  result1 <- glm(bill_length[index,1]~bill_length[index,2], family=binomial(logit))
+  r <- coefficients(result1)
+  res <- rbind(data.frame(), r)
+}
+
+trials <- seq(1, trials)
+system.time({
+  results <- lapply(trials, boot_fx)
+})
+```
+
+
+```{r}
+library(parallel)
+numCores <- detectCores()
+numCores
+```
+
+```{r}
+system.time({
+  res_mca <- mclapply(trials, boot_fx, mc.cores = numCores)
+})
+```
+
+
+
+
+
+
