@@ -4,6 +4,7 @@ author: "Britne Clifton"
 date: "2023-08-30"
 output: html_document
 ---
+# and then additional notes
 
 ```{r}
 library(readr)
