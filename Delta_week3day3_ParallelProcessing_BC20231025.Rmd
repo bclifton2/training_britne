@@ -5,7 +5,7 @@ date: "2023-10-25"
 output: html_document
 ---
 
-# learn branching and testing
+# learn branching and testing and other things
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
