@@ -5,7 +5,7 @@ date: "2023-10-25"
 output: html_document
 ---
 
-
+# Learn branching
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -120,4 +120,24 @@ system.time({
   }
 })
 ```
+
+
+```{r}
+library(future)
+f <- future({
+    cat("Hello world!\n")
+    6.28
+})
+v <- value(f)
+```
+
+
+
+
+
+
+
+
+
+
 
